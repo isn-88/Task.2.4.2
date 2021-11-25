@@ -8,7 +8,17 @@
 
 <h2>New User</h2>
 
-<form th:method="POST" th:action="@{/users}" th:object="${user}">
+<form th:method="POST" th:action="@{/admin}" th:object="${user}">
+    <label for="username">Enter Username:</label>
+    <input type="text" th:field="*{username}" id="username">
+    <div style="color:red" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Username error</div>
+    <br/>
+    <br/>
+    <label for="password">Enter Password:</label>
+    <input type="text" th:field="*{password}" id="password">
+    <div style="color:red" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password error</div>
+    <br/>
+    <br/>
     <label for="name">Enter name:</label>
     <input type="text" th:field="*{name}" id="name">
     <div style="color:red" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name error</div>
@@ -29,7 +39,19 @@
     <div style="color:red" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email error</div>
     <br/>
     <br/>
+    <select class="form-select" th:field="*{roles}" multiple aria-label="multiple select" id="newRoles">
+        <option th:each="role : ${roles}"
+                th:text="${role.getRole()}"
+                th:value="${role.getRole()}">
+    </select>
+    <br/>
+    <br/>
     <input type="submit" value="Create new user">
+</form>
+<br/>
+<br/>
+<form th:action="@{/logout}" method="post">
+    <button type="submit">Sign Out</button>
 </form>
 </body>
 </html>

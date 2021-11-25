@@ -1,6 +1,8 @@
 package kata.academy.controller;
 
+import kata.academy.model.Role;
 import kata.academy.model.User;
+import kata.academy.repository.RoleRepository;
 import kata.academy.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -10,18 +12,20 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
+import java.util.*;
 
 
 @Controller
-@RequestMapping("/users")
-public class UsersController {
+@RequestMapping("/admin")
+public class AdminController {
 
-    private final UserService userService;
+
     @Autowired
-    public UsersController(UserService userService) {
-        this.userService = userService;
-    }
+    private UserService userService;
+
+
+    @Autowired
+    private RoleRepository roleRepository;
 
 
     @GetMapping()
@@ -33,7 +37,12 @@ public class UsersController {
 
 
     @GetMapping("/new")
-    public String newUser(@ModelAttribute("user") User user) {
+    public String newUser(Model model) {
+        User user = new User();
+        user.setPassword("");
+        List<Role> roles = roleRepository.findAll();
+        model.addAttribute("user", user);
+        model.addAttribute("roles", roles);
         return "new-user";
     }
 
@@ -43,8 +52,13 @@ public class UsersController {
         if (bindingResult.hasErrors()) {
             return "new-user";
         }
+        Set<Role> roles = user.getRoles();
+        for (Role r : roles) {
+            r.setId(roleRepository.findByRole(r.getRole()).getId());
+        }
+        user.setRoles(roles);
         userService.saveUser(user);
-        return "redirect:/users";
+        return "redirect:/admin";
     }
 
 
@@ -54,21 +68,36 @@ public class UsersController {
         if (bindingResult.hasErrors()) {
             return "update-user";
         }
+        Set<Role> roles = user.getRoles();
+        for (Role r : roles) {
+            r.setId(roleRepository.findByRole(r.getRole()).getId());
+        }
+        user.setRoles(roles);
         userService.saveUser(user);
-        return "redirect:/users";
+        return "redirect:/admin";
     }
 
 
     @GetMapping("user-delete/{id}")
     public String delete(@PathVariable("id") long id) {
         userService.deleteById(id);
-        return "redirect:/users";
+        return "redirect:/admin";
     }
 
 
     @GetMapping("user-update/{id}")
     public String editUser(Model model, @PathVariable("id") long id) {
-        model.addAttribute("user", userService.findById(id));
+        User user = userService.findById(id);
+        user.setPassword("");
+        List<Role> roles = roleRepository.findAll();
+        model.addAttribute("user", user);
+        model.addAttribute("roles", roles);
         return "update-user";
+    }
+
+
+    @GetMapping(value = "login")
+    public String loginPage() {
+        return "login";
     }
 }

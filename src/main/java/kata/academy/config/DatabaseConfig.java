@@ -17,7 +17,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 
-import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,7 +28,6 @@ import java.util.Properties;
 @PropertySource("classpath:db.properties")
 @ComponentScan(value = "kata.academy")
 public class DatabaseConfig {
-
 
     @Autowired
     private Environment env;
@@ -49,7 +47,6 @@ public class DatabaseConfig {
     public PlatformTransactionManager transactionManager() {
         JpaTransactionManager manager = new JpaTransactionManager();
         manager.setEntityManagerFactory(entityManagerFactory().getObject());
-
         return manager;
     }
 
@@ -73,7 +70,6 @@ public class DatabaseConfig {
         ds.setDriverClassName(env.getRequiredProperty("db.driver"));
         ds.setUsername(env.getRequiredProperty("db.username"));
         ds.setPassword(env.getRequiredProperty("db.password"));
-
         ds.setInitialSize(Integer.parseInt(env.getRequiredProperty("db.initialSize")));
         ds.setMinIdle(Integer.parseInt(env.getRequiredProperty("db.minIdle")));
         ds.setMaxIdle(Integer.parseInt(env.getRequiredProperty("db.maxIdle")));
@@ -81,10 +77,6 @@ public class DatabaseConfig {
         ds.setMinEvictableIdleTimeMillis(Long.parseLong(env.getRequiredProperty("db.minEvictableIdleTimeMillis")));
         ds.setTestOnBorrow(Boolean.parseBoolean(env.getRequiredProperty("db.testOnBorrow")));
         ds.setValidationQuery(env.getRequiredProperty("db.validationQuery"));
-
         return ds;
     }
-
-
-
 }

@@ -1,16 +1,39 @@
 package kata.academy.model;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import javax.persistence.*;
 import javax.validation.constraints.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
+    @Column(name = "username")
+    @NotEmpty(message = "Password should not be empty")
+    private String username;
+
+    @Column(name = "password")
+    @NotEmpty(message = "Password should not be empty")
+    private String password;
+
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name="users_roles",
+            joinColumns = @JoinColumn(name="user_id"),
+            inverseJoinColumns = @JoinColumn(name="role_id"))
+    private Set<Role> roles = new HashSet<>();
+
 
     @Column(name = "name")
     @NotEmpty(message = "Name should not be empty")
@@ -31,10 +54,14 @@ public class User {
     @Email(message = "Email should be valid")
     private String email;
 
+
+
     public User() {
     }
 
-    public User(String name, String surname, int age, String email) {
+    public User(String username, String password, String name, String surname, int age, String email) {
+        this.username = username;
+        this.password = password;
         this.name = name;
         this.surname = surname;
         this.age = age;
@@ -43,6 +70,14 @@ public class User {
 
     public Long getId() {
         return id;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public void setId(long id) {
@@ -81,15 +116,68 @@ public class User {
         this.email = email;
     }
 
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
+    public void addRole(Role role) {
+        this.roles.add(role);
+    }
+
+    public String getAllRolesToString() {
+        return roles.stream().map(Role::getRole).collect(Collectors.joining("; "));
+    }
+
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
+                ", username='" + username + '\'' +
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
                 ", age=" + age +
                 ", email='" + email + '\'' +
                 '}';
     }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return username;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
 }
 
