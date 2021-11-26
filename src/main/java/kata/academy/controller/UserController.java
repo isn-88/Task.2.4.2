@@ -22,12 +22,10 @@ public class UserController {
 
     @GetMapping()
     public String showUser(Model model) {
-
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
         User user = userService.findByUsername(username);
         model.addAttribute("user", user);
-        model.addAttribute("roles", user.getRoles());
         return "show-user";
     }
 }

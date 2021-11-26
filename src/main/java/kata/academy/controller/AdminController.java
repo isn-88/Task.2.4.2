@@ -39,10 +39,8 @@ public class AdminController {
     @GetMapping("/new")
     public String newUser(Model model) {
         User user = new User();
-        user.setPassword("");
-        List<Role> roles = roleRepository.findAll();
         model.addAttribute("user", user);
-        model.addAttribute("roles", roles);
+        model.addAttribute("allRoles", roleRepository.findAll());
         return "new-user";
     }
 
@@ -59,6 +57,16 @@ public class AdminController {
         user.setRoles(roles);
         userService.saveUser(user);
         return "redirect:/admin";
+    }
+
+
+    @GetMapping("user-update/{id}")
+    public String editUser(Model model, @PathVariable("id") long id) {
+        User user = userService.findById(id);
+        user.setPassword("");
+        model.addAttribute("user", user);
+        model.addAttribute("allRoles", roleRepository.findAll());
+        return "update-user";
     }
 
 
@@ -84,20 +92,4 @@ public class AdminController {
         return "redirect:/admin";
     }
 
-
-    @GetMapping("user-update/{id}")
-    public String editUser(Model model, @PathVariable("id") long id) {
-        User user = userService.findById(id);
-        user.setPassword("");
-        List<Role> roles = roleRepository.findAll();
-        model.addAttribute("user", user);
-        model.addAttribute("roles", roles);
-        return "update-user";
-    }
-
-
-    @GetMapping(value = "login")
-    public String loginPage() {
-        return "login";
-    }
 }

@@ -6,9 +6,10 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="CRUDappSecurity" />
         <module name="CRUDapp2" />
         <module name="CRUDapp1" />
+        <module name="CRUDappSecurity" />
+        <module name="crud-app1" />
       </profile>
     </annotationProcessing>
   </component>
